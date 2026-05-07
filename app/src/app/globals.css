@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-accent: #4f46e5;
+  --color-accent-dark: #4338ca;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    background-color: var(--color-white);
+    color: var(--color-black);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer utilities {
+  .public-app-layout {
+    background-color: var(--bg-primary, var(--color-white));
+  }
+  .message-bubble.user {
+    background-color: var(--accent-primary, var(--color-accent));
+    color: var(--color-white);
+  }
+}
