@@ -1,15 +1,33 @@
 import { createClient } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function DashboardPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export const dynamic = "force-dynamic";
 
-  const { data: apps } = await supabase
-    .from("apps")
-    .select("*")
-    .eq("creator_id", user!.id)
-    .order("created_at", { ascending: false });
+export default async function DashboardPage() {
+  let user = null;
+  let apps: any[] = [];
+
+  try {
+    const supabase = await createClient();
+    const result = await supabase.auth.getUser();
+    user = result.data.user;
+
+    if (!user) {
+      redirect("/login");
+    }
+
+    const { data } = await supabase
+      .from("apps")
+      .select("*")
+      .eq("creator_id", user.id)
+      .order("created_at", { ascending: false });
+
+    apps = data ?? [];
+  } catch (error) {
+    console.error("Failed to load dashboard page:", error);
+    redirect("/login");
+  }
 
   const typeLabels: Record<string, string> = {
     chat: "Chat",
