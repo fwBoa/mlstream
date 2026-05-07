@@ -27,38 +27,28 @@ export default function NewAppPage() {
     setSlug(generateSlug(value));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      setError("You must be logged in.");
-      setLoading(false);
-      return;
-    }
+    const formData = new FormData(e.currentTarget);
+    formData.set("name", name);
+    formData.set("slug", slug);
+    formData.set("description", description);
+    formData.set("appType", appType);
+    formData.set("provider", provider);
+    formData.set("model", model);
+    formData.set("apiKey", apiKey);
+    formData.set("systemPrompt", systemPrompt);
+    formData.set("maxTokens", maxTokens.toString());
+    formData.set("temperature", temperature.toString());
 
-    const { error: insertError } = await supabase.from("apps").insert({
-      creator_id: user.id,
-      name,
-      slug,
-      description: description || null,
-      app_type: appType,
-      ai_config: {
-        provider,
-        model,
-        system_prompt: systemPrompt,
-        max_tokens: maxTokens,
-        temperature,
-      },
-      api_key_encrypted: apiKey,
-      max_tokens_limit: maxTokens,
-      status: "draft",
-    });
+    const { createAppAction } = await import("../actions");
+    const result = await createAppAction(formData);
 
-    if (insertError) {
-      setError(insertError.message);
+    if (result.error) {
+      setError(result.error);
       setLoading(false);
       return;
     }
