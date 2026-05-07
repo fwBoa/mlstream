@@ -1,11 +1,13 @@
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ChatTemplate from "@/components/templates/ChatTemplate";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const supabase = createAdminClient();
+  const supabase = await createClient();
   const { data: app } = await supabase
     .from("apps")
     .select("name, description")
@@ -27,7 +29,7 @@ export default async function PublicAppPage({
 }) {
   const { slug } = await params;
 
-  const supabase = createAdminClient();
+  const supabase = await createClient();
 
   const { data: app, error } = await supabase
     .from("apps")
