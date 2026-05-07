@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
-export default function EditAppPage({ params }: { params: { id: string } }) {
+export default function EditAppPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params?.id as string;
   const supabase = createClient();
-  const { id } = params;
 
   const [app, setApp] = useState<any>(null);
   const [name, setName] = useState("");
